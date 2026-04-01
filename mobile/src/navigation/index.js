@@ -17,35 +17,33 @@ const TABS = [
   { name: 'Profile', label: 'Profil',  icon: '👤', screen: ProfileScreen  },
 ];
 
-function TabIcon({ icon, label, focused }) {
-  return (
-    <View style={[styles.tabItem, focused && styles.tabItemActive]}>
-      <Text style={styles.tabEmoji}>{icon}</Text>
-      <Text style={[styles.tabLabel, focused && styles.tabLabelActive]}>{label}</Text>
-    </View>
-  );
-}
-
 export default function Navigation() {
   return (
     <NavigationContainer>
       <Tab.Navigator
-        screenOptions={{
+        screenOptions={({ route }) => ({
           headerShown: false,
           tabBarStyle: styles.tabBar,
-          tabBarShowLabel: false,
-        }}
+          tabBarActiveTintColor: T.terra,
+          tabBarInactiveTintColor: T.light,
+          tabBarLabelStyle: styles.tabLabel,
+          tabBarIconStyle: styles.tabIconStyle,
+          tabBarIcon: ({ focused }) => {
+            const tab = TABS.find((t) => t.name === route.name);
+            return (
+              <View style={[styles.iconWrap, focused && styles.iconWrapActive]}>
+                <Text style={styles.emoji}>{tab.icon}</Text>
+              </View>
+            );
+          },
+        })}
       >
-        {TABS.map(({ name, label, icon, screen }) => (
+        {TABS.map(({ name, label, screen }) => (
           <Tab.Screen
             key={name}
             name={name}
             component={screen}
-            options={{
-              tabBarIcon: ({ focused }) => (
-                <TabIcon icon={icon} label={label} focused={focused} />
-              ),
-            }}
+            options={{ tabBarLabel: label }}
           />
         ))}
       </Tab.Navigator>
@@ -58,32 +56,30 @@ const styles = StyleSheet.create({
     backgroundColor: T.white,
     borderTopColor: T.border,
     borderTopWidth: 1,
-    height: 72,
-    paddingBottom: 8,
-    paddingTop: 8,
+    height: 80,
+    paddingBottom: 10,
+    paddingTop: 6,
     ...T.shadow.sm,
   },
-  tabItem: {
+  tabLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    marginTop: 2,
+  },
+  tabIconStyle: {
+    marginTop: 4,
+  },
+  iconWrap: {
+    width: 40,
+    height: 32,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 4,
-    borderRadius: T.radius.md,
-    gap: 2,
+    borderRadius: 10,
   },
-  tabItemActive: {
+  iconWrapActive: {
     backgroundColor: '#FDF2EC',
   },
-  tabEmoji: {
-    fontSize: 20,
-  },
-  tabLabel: {
-    fontSize: 10,
-    color: T.light,
-    fontWeight: '500',
-  },
-  tabLabelActive: {
-    color: T.terra,
-    fontWeight: '700',
+  emoji: {
+    fontSize: 22,
   },
 });

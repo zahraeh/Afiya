@@ -1,6 +1,6 @@
 const OURA_BASE = 'https://api.ouraring.com/v2/usercollection';
 
-function getDateRange(days = 14) {
+function getDateRange(days = 30) {
   const end = new Date();
   const start = new Date();
   start.setDate(end.getDate() - days);
@@ -22,29 +22,57 @@ async function fetchOura(endpoint, token, params = {}) {
   return response.json();
 }
 
+// Keep only the main sleep session per day (long_sleep preferred, else longest)
 function parseSleepData(data) {
   const byDay = {};
   (data.data || []).forEach((s) => {
-    if (!byDay[s.day] || s.total_sleep_duration > byDay[s.day].total_sleep_duration) {
+    const existing = byDay[s.day];
+    if (!existing) {
       byDay[s.day] = s;
+    } else {
+      // Prefer long_sleep type over others
+      const existingIsLong = existing.type === 'long_sleep';
+      const newIsLong = s.type === 'long_sleep';
+      if (newIsLong && !existingIsLong) {
+        byDay[s.day] = s;
+      } else if (newIsLong === existingIsLong) {
+        // Same type — keep the longer one
+        if ((s.total_sleep_duration || 0) > (existing.total_sleep_duration || 0)) {
+          byDay[s.day] = s;
+        }
+      }
     }
   });
   return Object.values(byDay).sort((a, b) => b.day.localeCompare(a.day));
 }
 
 export async function loadOuraData(token) {
-  const { start, end } = getDateRange(14);
+  const { start, end } = getDateRange(30);
 
-  const [sleepRaw, readinessRaw, activityRaw] = await Promise.all([
+  const [sleepRaw, readinessRaw, activityRaw, dailySleepRaw] = await Promise.all([
     fetchOura('sleep', token, { start_date: start, end_date: end }),
     fetchOura('daily_readiness', token, { start_date: start, end_date: end }),
     fetchOura('daily_activity', token, { start_date: start, end_date: end }),
+    fetchOura('daily_sleep', token, { start_date: start, end_date: end }),
   ]);
 
   const sleepSessions = parseSleepData(sleepRaw);
   const latest = sleepSessions[0] || {};
-  const readiness = (readinessRaw.data || []).sort((a, b) => b.day.localeCompare(a.day))[0] || {};
-  const activity = (activityRaw.data || []).sort((a, b) => b.day.localeCompare(a.day))[0] || {};
+
+  const readinessByDay = {};
+  (readinessRaw.data || []).forEach((r) => { readinessByDay[r.day] = r; });
+
+  const activitySorted = (activityRaw.data || []).sort((a, b) => b.day.localeCompare(a.day));
+  const activity = activitySorted[0] || {};
+
+  // Build daily sleep score map for the history
+  const dailySleepByDay = {};
+  (dailySleepRaw.data || []).forEach((d) => { dailySleepByDay[d.day] = d; });
+
+  // Most recent readiness (same day as latest sleep or the day after)
+  const readiness = readinessByDay[latest.day]
+    || Object.values(readinessByDay).sort((a, b) => b.day.localeCompare(a.day))[0]
+    || {};
 
   return {
     sleep: {
@@ -58,14 +86,17 @@ export async function loadOuraData(token) {
       readiness_score: readiness.score || 0,
       readiness_contributors: readiness.contributors || {},
       last_night: latest.day || new Date().toISOString().split('T')[0],
+      sleep_score: dailySleepByDay[latest.day]?.score || 0,
     },
     sleepHistory: sleepSessions.slice(0, 7).map((s) => ({
       day: s.day,
-      hours: +(s.total_sleep_duration / 3600).toFixed(1),
-      efficiency: s.efficiency,
-      hrv: s.average_hrv,
-      deep: +(s.deep_sleep_duration / 3600).toFixed(1),
-      rem: +(s.rem_sleep_duration / 3600).toFixed(1),
+      hours: s.total_sleep_duration ? +(s.total_sleep_duration / 3600).toFixed(1) : 0,
+      efficiency: s.efficiency || 0,
+      hrv: s.average_hrv || 0,
+      deep: s.deep_sleep_duration ? +(s.deep_sleep_duration / 3600).toFixed(1) : 0,
+      rem: s.rem_sleep_duration ? +(s.rem_sleep_duration / 3600).toFixed(1) : 0,
+      readiness: readinessByDay[s.day]?.score || 0,
+      sleep_score: dailySleepByDay[s.day]?.score || 0,
     })).reverse(),
     activity: {
       steps: activity.steps || 0,
@@ -78,8 +109,7 @@ export async function loadOuraData(token) {
 
 export async function validateToken(token) {
   try {
-    const { end } = getDateRange(1);
-    const start = end;
+    const { start, end } = getDateRange(7);
     await fetchOura('daily_readiness', token, { start_date: start, end_date: end });
     return true;
   } catch {
