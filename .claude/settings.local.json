@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(npx expo:*)",
-      "Bash(npx expo-doctor:*)"
+      "Bash(npx expo-doctor:*)",
+      "Bash(npm --version)"
     ]
   }
 }
