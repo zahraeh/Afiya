@@ -26,6 +26,19 @@ export async function fetchAfiyaAdvice(apiKey, healthData, userMessage = null) {
   const phase = T.phases[healthData.cycle.phase];
   const sleepH = (healthData.sleep.total_sleep_duration / 3600).toFixed(1);
 
+  const stressLine = healthData.stress
+    ? `- Stress : ${healthData.stress.day_summary || 'n/a'}, ${healthData.stress.stress_high_minutes}min stress élevé, ${healthData.stress.recovery_high_minutes}min récupération élevée`
+    : '';
+  const spo2Line = healthData.spo2
+    ? `- SpO2 : ${healthData.spo2.average?.toFixed(1)}% moy, ${healthData.spo2.minimum?.toFixed(1)}% min`
+    : '';
+  const tempLine = healthData.temperature?.deviation != null
+    ? `- Température basale : ${healthData.temperature.deviation >= 0 ? '+' : ''}${healthData.temperature.deviation?.toFixed(2)}°C (tendance ${healthData.temperature.trend_deviation >= 0 ? '+' : ''}${healthData.temperature.trend_deviation?.toFixed(2)}°C)`
+    : '';
+  const workoutsLine = healthData.workouts?.length > 0
+    ? `- Entraînements récents : ${healthData.workouts.slice(0, 3).map((w) => `${w.activity} ${Math.round(w.duration / 60)}min (${w.intensity})`).join(', ')}`
+    : '';
+
   const systemPrompt = `Tu es Afiya, coach de bien-être quotidien, experte en santé féminine et cyclique.
 Tu parles en français avec un ton bienveillant, chaleureux, non-culpabilisant et adulte.
 Tu génères UN conseil personnalisé basé sur les données réelles de l'utilisatrice.
@@ -43,6 +56,10 @@ Données aujourd'hui :
 - FC repos : ${healthData.sleep.average_heart_rate}bpm
 - Récupération Oura : ${healthData.sleep.readiness_score}/100
 - Pas : ${healthData.activity.steps}, Cal actives : ${healthData.activity.active_calories}
+${stressLine}
+${spo2Line}
+${tempLine}
+${workoutsLine}
 - Objectifs : ${(healthData.profile.goals || []).join(', ')}
 - Profil hormonal : ${healthData.profile.hormonal_profile || 'standard'}
 
