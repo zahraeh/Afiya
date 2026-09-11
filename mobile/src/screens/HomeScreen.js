@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity, StyleSheet,
-  ActivityIndicator, RefreshControl, TextInput, Alert,
+  ActivityIndicator, RefreshControl, TextInput, Alert, Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
@@ -9,6 +9,7 @@ import { T } from '../constants/theme';
 import { Storage, SecureStorage, KEYS } from '../services/storage';
 import { loadOuraData } from '../services/oura';
 import { fetchAfiyaAdvice, computeCyclePhase } from '../services/claude';
+import { getDemoData } from '../services/demo';
 
 const ENERGY_ICONS = { low: '🔋', medium: '⚡', high: '🚀' };
 const CATEGORY_ICONS = { sommeil: '🌙', cycle: '🌿', sport: '💪', humeur: '☀️', nutrition: '🥗' };
@@ -31,6 +32,13 @@ export default function HomeScreen() {
         Storage.get(KEYS.USER_PROFILE),
         Storage.get(KEYS.CYCLE_DATA),
       ]);
+
+      if (Platform.OS === 'web' && (!ouraToken || !profile)) {
+        const demo = getDemoData();
+        setHealthData(demo.healthData);
+        setAdvice(demo.advice);
+        return;
+      }
 
       if (!ouraToken) {
         setError('no_token');

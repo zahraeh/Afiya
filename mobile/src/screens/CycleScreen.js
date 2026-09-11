@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { T } from '../constants/theme';
 import { Storage, KEYS } from '../services/storage';
 import { computeCyclePhase } from '../services/claude';
+import { getDemoData } from '../services/demo';
 
 const SYMPTOMS = ['Crampes', 'Ballonnements', 'Fatigue', 'Migraines', 'Humeur variable', 'Acné', 'Sensibilité', 'Insomnies'];
 const MOODS = ['😊', '😐', '😔', '😤', '😴', '🤩', '😰', '🥰'];
@@ -94,7 +95,15 @@ export default function CycleScreen() {
         setTodayLog(log);
       }
     } else {
-      setEditMode(true);
+      if (Platform.OS === 'web') {
+        const demoCycle = getDemoData().cycleData;
+        setCycleData(demoCycle);
+        setCycleInfo(computeCyclePhase(demoCycle.lastPeriodStart, demoCycle.cycleLength));
+        setLastPeriodInput(demoCycle.lastPeriodStart);
+        setCycleLengthInput(String(demoCycle.cycleLength));
+      } else {
+        setEditMode(true);
+      }
     }
   }, []);
 

@@ -1,13 +1,14 @@
 import React, { useState, useCallback } from 'react';
 import {
   View, Text, ScrollView, StyleSheet, ActivityIndicator,
-  RefreshControl, TouchableOpacity,
+  RefreshControl, TouchableOpacity, Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { T } from '../constants/theme';
 import { SecureStorage, KEYS } from '../services/storage';
 import { loadOuraData } from '../services/oura';
+import { getDemoData } from '../services/demo';
 
 const STRESS_LABELS = {
   restored: 'Reposée',
@@ -98,6 +99,10 @@ export default function SleepScreen() {
     try {
       setError(null);
       const token = await SecureStorage.get(KEYS.OURA_TOKEN);
+      if (Platform.OS === 'web' && !token) {
+        setData(getDemoData().ouraData);
+        return;
+      }
       if (!token) { setError('no_token'); return; }
       const oura = await loadOuraData(token);
       setData(oura);
