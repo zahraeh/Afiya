@@ -11,10 +11,10 @@ import { loadOuraData } from '../services/oura';
 import { getDemoData } from '../services/demo';
 
 const STRESS_LABELS = {
-  restored: 'Reposée',
+  restored: 'Restored',
   normal: 'Normal',
-  stressful: 'Stressant',
-  very_stressful: 'Très stressant',
+  stressful: 'Stressful',
+  very_stressful: 'Very stressful',
 };
 
 const STRESS_COLORS = {
@@ -47,7 +47,7 @@ const bar = StyleSheet.create({
 
 function ReadinessRing({ score }) {
   const color = score >= 70 ? T.sage : score >= 50 ? T.gold : T.red;
-  const label = score >= 70 ? 'Optimal' : score >= 50 ? 'Correct' : 'Repos conseillé';
+  const label = score >= 70 ? 'Optimal' : score >= 50 ? 'Fair' : 'Rest recommended';
   return (
     <View style={ring.wrap}>
       <View style={[ring.circle, { borderColor: color }]}>
@@ -133,11 +133,11 @@ export default function SleepScreen() {
   if (error) return (
     <View style={s.center}>
       <Text style={s.errorEmoji}>{error === 'no_token' ? '🔑' : '📡'}</Text>
-      <Text style={s.errorTitle}>{error === 'no_token' ? 'Token Oura manquant' : 'Erreur de connexion'}</Text>
-      <Text style={s.errorText}>{error === 'no_token' ? 'Ajoute ton token dans Profil.' : 'Vérifie ta connexion.'}</Text>
+      <Text style={s.errorTitle}>{error === 'no_token' ? 'Oura token missing' : 'Connection error'}</Text>
+      <Text style={s.errorText}>{error === 'no_token' ? 'Add your token in Profile.' : 'Check your connection.'}</Text>
       {error !== 'no_token' && (
         <TouchableOpacity style={s.retryBtn} onPress={() => { setLoading(true); load().finally(() => setLoading(false)); }}>
-          <Text style={s.retryText}>Réessayer</Text>
+          <Text style={s.retryText}>Retry</Text>
         </TouchableOpacity>
       )}
     </View>
@@ -155,8 +155,8 @@ export default function SleepScreen() {
         contentContainerStyle={s.content}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={T.terra} />}
       >
-        <Text style={s.title}>Sommeil</Text>
-        <Text style={s.sub}>Dernière nuit · {sleep.last_night}</Text>
+        <Text style={s.title}>Sleep</Text>
+        <Text style={s.sub}>Last night · {sleep.last_night}</Text>
 
         {/* Readiness + main stat */}
         <View style={s.heroRow}>
@@ -164,11 +164,11 @@ export default function SleepScreen() {
           <View style={s.heroStats}>
             <View style={s.heroStat}>
               <Text style={s.heroValue}>{sleepH}h</Text>
-              <Text style={s.heroLabel}>Durée totale</Text>
+              <Text style={s.heroLabel}>Total duration</Text>
             </View>
             <View style={s.heroStat}>
               <Text style={s.heroValue}>{sleep.efficiency}%</Text>
-              <Text style={s.heroLabel}>Efficacité</Text>
+              <Text style={s.heroLabel}>Efficiency</Text>
             </View>
           </View>
         </View>
@@ -176,7 +176,7 @@ export default function SleepScreen() {
         {/* 7-day history chart */}
         {sleepHistory.length > 0 && (
           <View style={[s.card, T.shadow.sm]}>
-            <Text style={s.cardTitle}>7 dernières nuits</Text>
+            <Text style={s.cardTitle}>Last 7 nights</Text>
             <View style={s.chartRow}>
               {sleepHistory.map((d) => (
                 <View key={d.day} style={s.chartCol}>
@@ -196,20 +196,20 @@ export default function SleepScreen() {
 
         {/* Detailed metrics */}
         <View style={[s.card, T.shadow.sm]}>
-          <Text style={s.cardTitle}>Détails de la nuit</Text>
-          <MetricRow icon="🌊" label="Sommeil profond" sub="Récupération physique" value={`${deepH}h`} />
-          <MetricRow icon="💭" label="Sommeil REM" sub="Récupération mentale" value={`${remH}h`} />
-          <MetricRow icon="❤️" label="HRV moyen" sub="Variabilité cardiaque" value={`${sleep.average_hrv} ms`} />
-          <MetricRow icon="💓" label="FC repos" sub="Fréquence cardiaque" value={`${sleep.average_heart_rate} bpm`} />
-          <MetricRow icon="⏱️" label="Latence" sub="Temps pour s'endormir" value={`${latencyMin} min`} />
+          <Text style={s.cardTitle}>Night details</Text>
+          <MetricRow icon="🌊" label="Deep sleep" sub="Physical recovery" value={`${deepH}h`} />
+          <MetricRow icon="💭" label="REM sleep" sub="Mental recovery" value={`${remH}h`} />
+          <MetricRow icon="❤️" label="Average HRV" sub="Heart rate variability" value={`${sleep.average_hrv} ms`} />
+          <MetricRow icon="💓" label="Resting heart rate" sub="Heart rate" value={`${sleep.average_heart_rate} bpm`} />
+          <MetricRow icon="⏱️" label="Sleep latency" sub="Time to fall asleep" value={`${latencyMin} min`} />
           {spo2 && (
-            <MetricRow icon="🫁" label="SpO2 moyen" sub="Saturation en oxygène" value={`${spo2.average?.toFixed(1)}%`} />
+            <MetricRow icon="🫁" label="Average SpO2" sub="Oxygen saturation" value={`${spo2.average?.toFixed(1)}%`} />
           )}
           {temperature?.deviation != null && (
             <MetricRow
               icon="🌡️"
-              label="Température basale"
-              sub="Déviation par rapport à la normale"
+              label="Basal temperature"
+              sub="Deviation from baseline"
               value={`${temperature.deviation >= 0 ? '+' : ''}${temperature.deviation?.toFixed(2)}°C`}
             />
           )}
@@ -218,7 +218,7 @@ export default function SleepScreen() {
         {/* Readiness contributors */}
         {Object.keys(sleep.readiness_contributors).length > 0 && (
           <View style={[s.card, T.shadow.sm]}>
-            <Text style={s.cardTitle}>Facteurs de récupération</Text>
+            <Text style={s.cardTitle}>Recovery factors</Text>
             {Object.entries(sleep.readiness_contributors).map(([key, val]) => {
               if (typeof val !== 'number') return null;
               const label = key.replace(/_/g, ' ');
@@ -239,16 +239,16 @@ export default function SleepScreen() {
         {/* Stress */}
         {stress && (
           <View style={[s.card, T.shadow.sm]}>
-            <Text style={s.cardTitle}>Stress & récupération</Text>
+            <Text style={s.cardTitle}>Stress & recovery</Text>
             <View style={s.stressRow}>
               <View style={s.stressStat}>
                 <Text style={s.stressValue}>{stress.stress_high_minutes}<Text style={s.stressUnit}> min</Text></Text>
-                <Text style={s.stressLabel}>Stress élevé</Text>
+                <Text style={s.stressLabel}>High stress</Text>
               </View>
               <View style={s.stressDivider} />
               <View style={s.stressStat}>
                 <Text style={[s.stressValue, { color: T.sage }]}>{stress.recovery_high_minutes}<Text style={s.stressUnit}> min</Text></Text>
-                <Text style={s.stressLabel}>Récupération</Text>
+                <Text style={s.stressLabel}>Recovery</Text>
               </View>
               {stress.day_summary && (
                 <>
@@ -257,7 +257,7 @@ export default function SleepScreen() {
                     <Text style={[s.stressBadge, { backgroundColor: STRESS_COLORS[stress.day_summary]?.bg || T.bg2, color: STRESS_COLORS[stress.day_summary]?.text || T.mid }]}>
                       {STRESS_LABELS[stress.day_summary] || stress.day_summary}
                     </Text>
-                    <Text style={s.stressLabel}>Journée</Text>
+                    <Text style={s.stressLabel}>Day</Text>
                   </View>
                 </>
               )}
@@ -268,7 +268,7 @@ export default function SleepScreen() {
         {/* Workouts */}
         {workouts?.length > 0 && (
           <View style={[s.card, T.shadow.sm]}>
-            <Text style={s.cardTitle}>Activité physique récente</Text>
+            <Text style={s.cardTitle}>Recent activity</Text>
             {workouts.map((w, i) => (
               <View key={i} style={s.workoutRow}>
                 <Text style={s.workoutIcon}>{WORKOUT_ICONS[w.activity] || '🏃'}</Text>

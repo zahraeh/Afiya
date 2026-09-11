@@ -8,8 +8,8 @@ import { T } from '../constants/theme';
 import { Storage, SecureStorage, KEYS } from '../services/storage';
 import { validateToken } from '../services/oura';
 
-const GOALS = ['Mieux dormir', 'Gérer le stress', 'Performer au sport', 'Équilibrer mon énergie', 'Comprendre mon cycle', 'Mieux récupérer'];
-const HORMONAL_PROFILES = ['Standard', 'SOPK', 'Péri-ménopause', 'Ménopause', 'Post-partum', 'Pilule'];
+const GOALS = ['Sleep better', 'Manage stress', 'Improve performance', 'Balance my energy', 'Understand my cycle', 'Recover better'];
+const HORMONAL_PROFILES = ['Standard', 'PCOS', 'Perimenopause', 'Menopause', 'Postpartum', 'Birth control'];
 
 function Section({ title, children }) {
   return (
@@ -88,7 +88,7 @@ export default function ProfileScreen() {
 
   const saveAll = async () => {
     if (!name.trim()) {
-      Alert.alert('Prénom manquant', 'Entre ton prénom pour continuer.');
+      Alert.alert('Name missing', 'Enter your first name to continue.');
       return;
     }
     const profile = {
@@ -108,12 +108,12 @@ export default function ProfileScreen() {
 
   const deleteAllData = () => {
     Alert.alert(
-      'Supprimer toutes les données',
-      'Cette action est irréversible. Toutes tes données locales seront effacées.',
+      'Delete all data',
+      'This action cannot be undone. All local data will be deleted.',
       [
-        { text: 'Annuler', style: 'cancel' },
+        { text: 'Cancel', style: 'cancel' },
         {
-          text: 'Supprimer', style: 'destructive',
+          text: 'Delete', style: 'destructive',
           onPress: async () => {
             await Promise.all([
               Storage.remove(KEYS.USER_PROFILE),
@@ -125,7 +125,7 @@ export default function ProfileScreen() {
             ]);
             setName(''); setOuraToken(''); setAnthropicKey('');
             setGoals([]); setHormonalProfile('Standard');
-            Alert.alert('Données supprimées', 'Toutes tes données ont été effacées.');
+            Alert.alert('Data deleted', 'All your data has been deleted.');
           },
         },
       ]
@@ -135,26 +135,26 @@ export default function ProfileScreen() {
   return (
     <SafeAreaView style={s.safe} edges={['top']}>
       <ScrollView contentContainerStyle={s.content} keyboardShouldPersistTaps="handled">
-        <Text style={s.title}>Profil</Text>
+        <Text style={s.title}>Profile</Text>
 
         {/* Identity */}
-        <Section title="Identité">
-          <SettingRow label="Prénom" last>
+        <Section title="Identity">
+          <SettingRow label="First name" last>
             <TextInput
               style={s.inlineInput}
               value={name}
               onChangeText={setName}
-              placeholder="Ton prénom"
+              placeholder="Your first name"
               placeholderTextColor={T.light}
             />
           </SettingRow>
         </Section>
 
         {/* Connections */}
-        <Section title="Connexions">
+        <Section title="Connections">
           <View style={s.tokenField}>
             <Text style={s.fieldLabel}>Token Oura Ring</Text>
-            <Text style={s.fieldHint}>Obtiens-le sur cloud.ouraring.com → Personal Access Tokens</Text>
+            <Text style={s.fieldHint}>Get it from cloud.ouraring.com → Personal Access Tokens</Text>
             <View style={s.tokenRow}>
               <TextInput
                 style={[s.tokenInput, tokenStatus === 'valid' && s.tokenValid, tokenStatus === 'invalid' && s.tokenInvalid]}
@@ -171,16 +171,16 @@ export default function ProfileScreen() {
                 onPress={checkToken}
                 disabled={validating || !ouraToken.trim()}
               >
-                <Text style={s.verifyText}>{validating ? '…' : 'Vérifier'}</Text>
+                <Text style={s.verifyText}>{validating ? '…' : 'Verify'}</Text>
               </TouchableOpacity>
             </View>
-            {tokenStatus === 'valid' && <Text style={s.tokenOk}>✓ Token valide</Text>}
-            {tokenStatus === 'invalid' && <Text style={s.tokenErr}>✗ Token invalide ou expiré</Text>}
+            {tokenStatus === 'valid' && <Text style={s.tokenOk}>✓ Valid token</Text>}
+            {tokenStatus === 'invalid' && <Text style={s.tokenErr}>✗ Invalid or expired token</Text>}
           </View>
 
           <View style={[s.tokenField, { borderTopWidth: 1, borderTopColor: T.border }]}>
             <Text style={s.fieldLabel}>Clé API Anthropic</Text>
-            <Text style={s.fieldHint}>Nécessaire pour le conseil IA quotidien (console.anthropic.com)</Text>
+            <Text style={s.fieldHint}>Required for daily AI advice (console.anthropic.com)</Text>
             <TextInput
               style={s.tokenInput}
               value={anthropicKey}
@@ -195,7 +195,7 @@ export default function ProfileScreen() {
         </Section>
 
         {/* Hormonal profile */}
-        <Section title="Profil hormonal">
+        <Section title="Hormonal profile">
           <View style={s.chipsWrap}>
             {HORMONAL_PROFILES.map((p) => (
               <TouchableOpacity
@@ -210,7 +210,7 @@ export default function ProfileScreen() {
         </Section>
 
         {/* Goals */}
-        <Section title="Mes objectifs">
+        <Section title="My goals">
           <View style={s.chipsWrap}>
             {GOALS.map((g) => (
               <TouchableOpacity
@@ -225,8 +225,8 @@ export default function ProfileScreen() {
         </Section>
 
         {/* Preferences */}
-        <Section title="Préférences">
-          <SettingRow label="Notification matinale" sub="Reçois ton conseil chaque matin" last>
+        <Section title="Preferences">
+          <SettingRow label="Morning notification" sub="Receive your advice each morning" last>
             <Switch
               value={notifications}
               onValueChange={setNotifications}
@@ -238,15 +238,15 @@ export default function ProfileScreen() {
 
         {/* Save button */}
         <TouchableOpacity style={[s.saveBtn, saved && s.saveBtnDone]} onPress={saveAll}>
-          <Text style={s.saveBtnText}>{saved ? '✓ Sauvegardé' : 'Sauvegarder le profil'}</Text>
+          <Text style={s.saveBtnText}>{saved ? '✓ Saved' : 'Save profile'}</Text>
         </TouchableOpacity>
 
         {/* RGPD */}
         <TouchableOpacity style={s.deleteBtn} onPress={deleteAllData}>
-          <Text style={s.deleteText}>Supprimer toutes mes données</Text>
+          <Text style={s.deleteText}>Delete all my data</Text>
         </TouchableOpacity>
 
-        <Text style={s.privacy}>🔒 Toutes tes données restent sur ton appareil. Afiya ne collecte rien.</Text>
+        <Text style={s.privacy}>🔒 Your data stays on your device. Afiya collects nothing.</Text>
       </ScrollView>
     </SafeAreaView>
   );

@@ -17,10 +17,10 @@ export const T = {
   red: '#E05C5C',
 
   phases: {
-    menstrual:  { color: '#E05C5C', bg: '#FDF0F0', label: 'Menstruelle',  emoji: '🩸', days: 'J1–J5'  },
-    follicular: { color: '#7A9E7E', bg: '#F0F5F1', label: 'Folliculaire', emoji: '🌱', days: 'J6–J13' },
-    ovulation:  { color: '#F5A623', bg: '#FDF6ED', label: 'Ovulatoire',   emoji: '✨', days: 'J14–J16' },
-    luteal:     { color: '#9B7EC8', bg: '#F5F0FB', label: 'Lutéale',      emoji: '🌙', days: 'J17–J28' },
+    menstrual:  { color: '#E05C5C', bg: '#FDF0F0', label: 'Menstrual',  emoji: '🩸', days: 'D1–D5'  },
+    follicular: { color: '#7A9E7E', bg: '#F0F5F1', label: 'Follicular', emoji: '🌱', days: 'D6–D13' },
+    ovulation:  { color: '#F5A623', bg: '#FDF6ED', label: 'Ovulation',  emoji: '✨', days: 'D14–D16' },
+    luteal:     { color: '#9B7EC8', bg: '#F5F0FB', label: 'Luteal',     emoji: '🌙', days: 'D17–D28' },
   },
 
   fonts: {

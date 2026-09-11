@@ -11,10 +11,10 @@ import ProfileScreen from '../screens/ProfileScreen';
 const Tab = createBottomTabNavigator();
 
 const TABS = [
-  { name: 'Home',    label: 'Accueil', icon: '🌿', screen: HomeScreen    },
-  { name: 'Sleep',   label: 'Sommeil', icon: '🌙', screen: SleepScreen   },
+  { name: 'Home',    label: 'Home',    icon: '🌿', screen: HomeScreen    },
+  { name: 'Sleep',   label: 'Sleep',   icon: '🌙', screen: SleepScreen   },
   { name: 'Cycle',   label: 'Cycle',   icon: '🌸', screen: CycleScreen   },
-  { name: 'Profile', label: 'Profil',  icon: '👤', screen: ProfileScreen  },
+  { name: 'Profile', label: 'Profile', icon: '👤', screen: ProfileScreen  },
 ];
 
 export default function Navigation() {

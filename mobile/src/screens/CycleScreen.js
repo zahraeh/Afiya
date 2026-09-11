@@ -9,7 +9,7 @@ import { Storage, KEYS } from '../services/storage';
 import { computeCyclePhase } from '../services/claude';
 import { getDemoData } from '../services/demo';
 
-const SYMPTOMS = ['Crampes', 'Ballonnements', 'Fatigue', 'Migraines', 'Humeur variable', 'Acné', 'Sensibilité', 'Insomnies'];
+const SYMPTOMS = ['Cramps', 'Bloating', 'Fatigue', 'Headaches', 'Mood changes', 'Acne', 'Sensitivity', 'Insomnia'];
 const MOODS = ['😊', '😐', '😔', '😤', '😴', '🤩', '😰', '🥰'];
 
 function PhaseCard({ phase, active }) {
@@ -51,7 +51,7 @@ function CalendarStrip({ cycleData }) {
         const info = T.phases[d.phase];
         return (
           <View key={i} style={[cal.cell, d.isToday && { borderColor: T.terra, borderWidth: 2 }]}>
-            <Text style={cal.dayName}>{d.date.toLocaleDateString('fr-FR', { weekday: 'narrow' })}</Text>
+            <Text style={cal.dayName}>{d.date.toLocaleDateString('en-US', { weekday: 'narrow' })}</Text>
             <View style={[cal.dot, { backgroundColor: info.color }]} />
             <Text style={[cal.dateNum, d.isToday && { color: T.terra, fontWeight: '700' }]}>
               {d.date.getDate()}
@@ -111,12 +111,12 @@ export default function CycleScreen() {
 
   const saveCycleData = async () => {
     if (!lastPeriodInput.match(/^\d{4}-\d{2}-\d{2}$/)) {
-      Alert.alert('Format invalide', 'Utilise le format AAAA-MM-JJ (ex: 2026-03-15)');
+      Alert.alert('Invalid format', 'Use the format YYYY-MM-DD (e.g. 2026-03-15)');
       return;
     }
     const length = parseInt(cycleLengthInput, 10);
     if (isNaN(length) || length < 20 || length > 45) {
-      Alert.alert('Durée invalide', 'La durée doit être entre 20 et 45 jours.');
+      Alert.alert('Invalid length', 'Cycle length must be between 20 and 45 days.');
       return;
     }
     const updated = { ...cycleData, lastPeriodStart: lastPeriodInput, cycleLength: length, logs: cycleData?.logs || {} };
@@ -139,7 +139,7 @@ export default function CycleScreen() {
     await Storage.set(KEYS.CYCLE_DATA, updated);
     setCycleData(updated);
     setTodayLog({ symptoms: selectedSymptoms, mood: selectedMood });
-    Alert.alert('Sauvegardé ✓', 'Ton journal du jour est enregistré.');
+    Alert.alert('Saved ✓', 'Your daily log has been saved.');
   };
 
   const phaseInfo = cycleInfo ? T.phases[cycleInfo.phase] : null;
@@ -155,13 +155,13 @@ export default function CycleScreen() {
             <Text style={s.phaseEmoji}>{phaseInfo.emoji}</Text>
             <View style={s.phaseInfo}>
               <Text style={[s.phaseName, { color: phaseInfo.color }]}>{phaseInfo.label}</Text>
-              <Text style={s.phaseDay}>Jour {cycleInfo.day} sur {cycleInfo.cycleLength}</Text>
+              <Text style={s.phaseDay}>Day {cycleInfo.day} of {cycleInfo.cycleLength}</Text>
               {cycleInfo.nextPeriod && (
-                <Text style={s.nextPeriod}>Prochaines règles : {cycleInfo.nextPeriod}</Text>
+                <Text style={s.nextPeriod}>Next period: {cycleInfo.nextPeriod}</Text>
               )}
             </View>
             <TouchableOpacity onPress={() => setEditMode(true)} style={s.editBtn}>
-              <Text style={s.editBtnText}>Modifier</Text>
+              <Text style={s.editBtnText}>Edit</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -169,7 +169,7 @@ export default function CycleScreen() {
         {/* Calendar strip */}
         {cycleData && (
           <View style={[s.card, T.shadow.sm]}>
-            <Text style={s.cardTitle}>Calendrier du cycle</Text>
+            <Text style={s.cardTitle}>Cycle calendar</Text>
             <CalendarStrip cycleData={cycleData} />
           </View>
         )}
@@ -177,7 +177,7 @@ export default function CycleScreen() {
         {/* Phase overview */}
         {cycleInfo && (
           <View style={[s.card, T.shadow.sm]}>
-            <Text style={s.cardTitle}>Phases du cycle</Text>
+            <Text style={s.cardTitle}>Cycle phases</Text>
             <View style={s.phasesRow}>
               {['menstrual', 'follicular', 'ovulation', 'luteal'].map((p) => (
                 <PhaseCard key={p} phase={p} active={cycleInfo.phase === p} />
@@ -189,8 +189,8 @@ export default function CycleScreen() {
         {/* Edit form */}
         {editMode && (
           <View style={[s.card, T.shadow.sm]}>
-            <Text style={s.cardTitle}>Configurer ton cycle</Text>
-            <Text style={s.fieldLabel}>Date de tes dernières règles (AAAA-MM-JJ)</Text>
+            <Text style={s.cardTitle}>Set up your cycle</Text>
+            <Text style={s.fieldLabel}>Date of your last period (YYYY-MM-DD)</Text>
             <TextInput
               style={s.input}
               value={lastPeriodInput}
@@ -199,7 +199,7 @@ export default function CycleScreen() {
               placeholderTextColor={T.light}
               keyboardType={Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'default'}
             />
-            <Text style={s.fieldLabel}>Durée de ton cycle (jours)</Text>
+            <Text style={s.fieldLabel}>Cycle length (days)</Text>
             <TextInput
               style={s.input}
               value={cycleLengthInput}
@@ -209,7 +209,7 @@ export default function CycleScreen() {
               placeholderTextColor={T.light}
             />
             <TouchableOpacity style={s.saveBtn} onPress={saveCycleData}>
-              <Text style={s.saveBtnText}>Enregistrer</Text>
+              <Text style={s.saveBtnText}>Save</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -217,8 +217,8 @@ export default function CycleScreen() {
         {/* Daily journal */}
         {cycleData && (
           <View style={[s.card, T.shadow.sm]}>
-            <Text style={s.cardTitle}>Journal du jour</Text>
-            <Text style={s.fieldLabel}>Humeur</Text>
+            <Text style={s.cardTitle}>Daily log</Text>
+            <Text style={s.fieldLabel}>Mood</Text>
             <View style={s.moodRow}>
               {MOODS.map((m) => (
                 <TouchableOpacity
@@ -230,7 +230,7 @@ export default function CycleScreen() {
                 </TouchableOpacity>
               ))}
             </View>
-            <Text style={s.fieldLabel}>Symptômes</Text>
+            <Text style={s.fieldLabel}>Symptoms</Text>
             <View style={s.symptomsGrid}>
               {SYMPTOMS.map((sym) => (
                 <TouchableOpacity
@@ -245,7 +245,7 @@ export default function CycleScreen() {
               ))}
             </View>
             <TouchableOpacity style={s.saveBtn} onPress={saveLog}>
-              <Text style={s.saveBtnText}>Sauvegarder le journal</Text>
+              <Text style={s.saveBtnText}>Save daily log</Text>
             </TouchableOpacity>
           </View>
         )}

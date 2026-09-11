@@ -12,7 +12,7 @@ import { fetchAfiyaAdvice, computeCyclePhase } from '../services/claude';
 import { getDemoData } from '../services/demo';
 
 const ENERGY_ICONS = { low: '🔋', medium: '⚡', high: '🚀' };
-const CATEGORY_ICONS = { sommeil: '🌙', cycle: '🌿', sport: '💪', humeur: '☀️', nutrition: '🥗' };
+const CATEGORY_ICONS = { sleep: '🌙', cycle: '🌿', sport: '💪', mood: '☀️', nutrition: '🥗' };
 
 export default function HomeScreen() {
   const [loading, setLoading] = useState(true);
@@ -115,14 +115,14 @@ export default function HomeScreen() {
     const saved = (await Storage.get(KEYS.SAVED_ADVICE)) || [];
     saved.unshift({ ...advice, date: new Date().toISOString() });
     await Storage.set(KEYS.SAVED_ADVICE, saved.slice(0, 50));
-    Alert.alert('Sauvegardé ✓', 'Ce conseil a été ajouté à ta liste.');
+    Alert.alert('Saved ✓', 'This advice was added to your list.');
   };
 
   if (loading) {
     return (
       <View style={styles.center}>
         <ActivityIndicator size="large" color={T.terra} />
-        <Text style={styles.loadingText}>Afiya analyse tes données…</Text>
+        <Text style={styles.loadingText}>Afiya is analyzing your data…</Text>
       </View>
     );
   }
@@ -131,8 +131,8 @@ export default function HomeScreen() {
     return (
       <View style={styles.center}>
         <Text style={styles.emoji}>🔑</Text>
-        <Text style={styles.errorTitle}>Token Oura manquant</Text>
-        <Text style={styles.errorText}>Va dans Profil pour ajouter ton token Oura.</Text>
+        <Text style={styles.errorTitle}>Oura token missing</Text>
+        <Text style={styles.errorText}>Go to Profile to add your Oura token.</Text>
       </View>
     );
   }
@@ -141,8 +141,8 @@ export default function HomeScreen() {
     return (
       <View style={styles.center}>
         <Text style={styles.emoji}>👤</Text>
-        <Text style={styles.errorTitle}>Profil incomplet</Text>
-        <Text style={styles.errorText}>Va dans Profil pour compléter ton profil.</Text>
+        <Text style={styles.errorTitle}>Incomplete profile</Text>
+        <Text style={styles.errorText}>Go to Profile to complete your profile.</Text>
       </View>
     );
   }
@@ -151,10 +151,10 @@ export default function HomeScreen() {
     return (
       <View style={styles.center}>
         <Text style={styles.emoji}>📡</Text>
-        <Text style={styles.errorTitle}>Erreur de connexion</Text>
-        <Text style={styles.errorText}>Vérifie ta connexion et ton token Oura.</Text>
+        <Text style={styles.errorTitle}>Connection error</Text>
+        <Text style={styles.errorText}>Check your connection and Oura token.</Text>
         <TouchableOpacity style={styles.retryBtn} onPress={() => { setLoading(true); loadData().finally(() => setLoading(false)); }}>
-          <Text style={styles.retryText}>Réessayer</Text>
+          <Text style={styles.retryText}>Retry</Text>
         </TouchableOpacity>
       </View>
     );
@@ -173,7 +173,7 @@ export default function HomeScreen() {
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.logo}>🌿 Afiya</Text>
-          <Text style={styles.date}>{new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}</Text>
+          <Text style={styles.date}>{new Date().toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' })}</Text>
         </View>
 
         {/* Phase badge */}
@@ -182,10 +182,10 @@ export default function HomeScreen() {
             <Text style={styles.phaseEmoji}>{phaseInfo.emoji}</Text>
             <View>
               <Text style={[styles.phaseLabel, { color: phaseInfo.color }]}>{phaseInfo.label}</Text>
-              <Text style={styles.phaseDay}>Jour {healthData.cycle.day} · {phaseInfo.days}</Text>
+              <Text style={styles.phaseDay}>Day {healthData.cycle.day} · {phaseInfo.days}</Text>
             </View>
             {healthData.cycle.nextPeriod && (
-              <Text style={styles.nextPeriod}>Prochaines règles : {healthData.cycle.nextPeriod}</Text>
+              <Text style={styles.nextPeriod}>Next period: {healthData.cycle.nextPeriod}</Text>
             )}
           </View>
         )}
@@ -197,25 +197,25 @@ export default function HomeScreen() {
               <Text style={styles.greeting}>{advice.greeting}</Text>
               <View style={styles.badges}>
                 <Text style={styles.badge}>{CATEGORY_ICONS[advice.category]} {advice.category}</Text>
-                <Text style={styles.badge}>{ENERGY_ICONS[advice.energy_level]} énergie {advice.energy_level}</Text>
+                <Text style={styles.badge}>{ENERGY_ICONS[advice.energy_level]} {advice.energy_level} energy</Text>
               </View>
             </View>
             <Text style={styles.insight}>{advice.insight}</Text>
             <Text style={styles.conseil}>{advice.conseil}</Text>
             <View style={styles.actionBox}>
-              <Text style={styles.actionLabel}>Action du jour</Text>
+              <Text style={styles.actionLabel}>Today's action</Text>
               <Text style={styles.actionText}>→ {advice.action}</Text>
             </View>
             {advice.phase_tip && (
               <Text style={styles.phaseTip}>{advice.phase_tip}</Text>
             )}
             <TouchableOpacity style={styles.saveBtn} onPress={saveAdvice}>
-              <Text style={styles.saveBtnText}>Sauvegarder ce conseil</Text>
+              <Text style={styles.saveBtnText}>Save this advice</Text>
             </TouchableOpacity>
           </View>
         ) : (
           <View style={[styles.adviceCard, styles.noApiCard, T.shadow.sm]}>
-            <Text style={styles.noApiText}>Ajoute ta clé Anthropic dans le Profil pour recevoir des conseils personnalisés.</Text>
+            <Text style={styles.noApiText}>Add your Anthropic key in Profile to receive personalized advice.</Text>
           </View>
         )}
 
@@ -225,17 +225,17 @@ export default function HomeScreen() {
             <View style={[styles.statCard, T.shadow.sm]}>
               <Text style={styles.statIcon}>🌙</Text>
               <Text style={styles.statValue}>{sleepH}h</Text>
-              <Text style={styles.statLabel}>Sommeil</Text>
+              <Text style={styles.statLabel}>Sleep</Text>
             </View>
             <View style={[styles.statCard, T.shadow.sm]}>
               <Text style={styles.statIcon}>💚</Text>
               <Text style={styles.statValue}>{healthData.sleep.readiness_score}</Text>
-              <Text style={styles.statLabel}>Récup.</Text>
+              <Text style={styles.statLabel}>Recovery</Text>
             </View>
             <View style={[styles.statCard, T.shadow.sm]}>
               <Text style={styles.statIcon}>👟</Text>
               <Text style={styles.statValue}>{(healthData.activity.steps / 1000).toFixed(1)}k</Text>
-              <Text style={styles.statLabel}>Pas</Text>
+              <Text style={styles.statLabel}>Steps</Text>
             </View>
             <View style={[styles.statCard, T.shadow.sm]}>
               <Text style={styles.statIcon}>❤️</Text>
@@ -247,11 +247,11 @@ export default function HomeScreen() {
 
         {/* Ask Afiya */}
         <View style={styles.askSection}>
-          <Text style={styles.askTitle}>Pose une question à Afiya</Text>
+          <Text style={styles.askTitle}>Ask Afiya a question</Text>
           <View style={styles.askRow}>
             <TextInput
               style={styles.askInput}
-              placeholder="Ex. : Puis-je faire du sport aujourd'hui ?"
+              placeholder="e.g. Can I work out today?"
               placeholderTextColor={T.light}
               value={question}
               onChangeText={setQuestion}

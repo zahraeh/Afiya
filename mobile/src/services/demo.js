@@ -48,7 +48,7 @@ const cycleData = {
 
 const profile = {
   name: 'Camille',
-  goals: ['Energie', 'Sommeil'],
+  goals: ['Energy', 'Sleep'],
   hormonal_profile: 'Standard',
 };
 
@@ -65,14 +65,14 @@ export function getDemoData() {
     cycleData,
     healthData: { ...ouraData, cycle, profile },
     advice: {
-      greeting: 'Bonjour Camille 🌿',
-      insight: 'Ta récupération est solide après une nuit régulière.',
-      conseil: 'Ton énergie est bien orientée aujourd’hui. Profite de cette phase folliculaire pour avancer sur une activité qui te donne de l’élan, sans chercher à tout optimiser.',
-      action: 'Planifie une activité qui te fait du bien.',
+      greeting: 'Good morning Camille 🌿',
+      insight: 'Your recovery is strong after a consistent night of sleep.',
+      conseil: 'Your energy is trending well today. Use this follicular phase to make progress on an activity that gives you momentum, without trying to optimize everything.',
+      action: 'Plan an activity that makes you feel good.',
       category: 'cycle',
-      phase_tip: 'Phase folliculaire : ton énergie remonte progressivement.',
+      phase_tip: 'Follicular phase: your energy is gradually rising.',
       energy_level: 'high',
-      mood_prediction: 'Une humeur curieuse et dynamique est probable.',
+      mood_prediction: 'A curious and energetic mood is likely.',
     },
   };
 }
