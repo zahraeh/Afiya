@@ -76,3 +76,49 @@ export function getDemoData() {
     },
   };
 }
+
+export function getDemoAnswer(question, healthData) {
+  const normalizedQuestion = question.toLowerCase();
+  const sleepHours = (healthData.sleep.total_sleep_duration / 3600).toFixed(1);
+  const readiness = healthData.sleep.readiness_score;
+  const phase = healthData.cycle.phase;
+
+  if (normalizedQuestion.includes('workout') || normalizedQuestion.includes('exercise') || normalizedQuestion.includes('sport')) {
+    return {
+      greeting: 'Here is your movement check 🌿',
+      insight: `Your readiness is ${readiness}/100, so your body looks ready for movement today.`,
+      conseil: 'Choose an activity that feels energizing rather than exhausting. A walk, yoga session, or moderate workout would all fit well with your current energy.',
+      action: 'Take a 20-minute walk or do a gentle workout.',
+      category: 'sport',
+      phase_tip: `You are in your ${phase} phase, so notice how your energy changes while you move.`,
+      energy_level: readiness >= 70 ? 'high' : 'medium',
+      mood_prediction: 'Movement may help you feel clearer and more grounded.',
+    };
+  }
+
+  if (normalizedQuestion.includes('sleep') || normalizedQuestion.includes('tired') || normalizedQuestion.includes('rest')) {
+    return {
+      greeting: 'Let us look at your recovery 🌙',
+      insight: `You slept ${sleepHours} hours with a readiness score of ${readiness}/100.`,
+      conseil: readiness >= 70
+        ? 'Your recovery looks solid today. Keep your evening routine steady so you can protect this momentum.'
+        : 'Your recovery could use extra care today. Keep the day lighter and give yourself an earlier wind-down tonight.',
+      action: 'Keep your evening calm and protect your bedtime.',
+      category: 'sleep',
+      phase_tip: 'Small, consistent routines are especially useful when your energy is changing.',
+      energy_level: readiness >= 70 ? 'high' : 'medium',
+      mood_prediction: 'A calmer pace can support steadier focus today.',
+    };
+  }
+
+  return {
+    greeting: 'Afiya has a thought for you ✨',
+    insight: `Your ${phase} phase and ${readiness}/100 readiness suggest a balanced day.`,
+    conseil: 'Start with one priority and leave room to adjust based on how you feel. Your body signals are useful information, not a performance score.',
+    action: 'Choose one supportive thing to do for yourself today.',
+    category: 'mood',
+    phase_tip: `In the ${phase} phase, check in with your energy before adding more to your day.`,
+    energy_level: readiness >= 70 ? 'high' : 'medium',
+    mood_prediction: 'A flexible plan can help you feel more at ease today.',
+  };
+}

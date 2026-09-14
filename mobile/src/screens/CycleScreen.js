@@ -4,6 +4,7 @@ import {
   TextInput, Alert, Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { T } from '../constants/theme';
 import { Storage, KEYS } from '../services/storage';
 import { computeCyclePhase } from '../services/claude';
@@ -50,7 +51,7 @@ function CalendarStrip({ cycleData }) {
       {days.map((d, i) => {
         const info = T.phases[d.phase];
         return (
-          <View key={i} style={[cal.cell, d.isToday && { borderColor: T.terra, borderWidth: 2 }]}>
+          <View key={i} style={[cal.cell, d.isToday && { borderColor: T.terra, borderWidth: 2 }]}> 
             <Text style={cal.dayName}>{d.date.toLocaleDateString('en-US', { weekday: 'narrow' })}</Text>
             <View style={[cal.dot, { backgroundColor: info.color }]} />
             <Text style={[cal.dateNum, d.isToday && { color: T.terra, fontWeight: '700' }]}>
@@ -149,9 +150,13 @@ export default function CycleScreen() {
       <ScrollView contentContainerStyle={s.content}>
         <Text style={s.title}>Cycle</Text>
 
-        {/* Phase summary */}
         {cycleInfo && phaseInfo && (
-          <View style={[s.phaseHero, { backgroundColor: phaseInfo.bg }, T.shadow.sm]}>
+          <LinearGradient
+            colors={[phaseInfo.bg, '#FFFDFB']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={[s.phaseHero, T.shadow.sm]}
+          >
             <Text style={s.phaseEmoji}>{phaseInfo.emoji}</Text>
             <View style={s.phaseInfo}>
               <Text style={[s.phaseName, { color: phaseInfo.color }]}>{phaseInfo.label}</Text>
@@ -163,10 +168,9 @@ export default function CycleScreen() {
             <TouchableOpacity onPress={() => setEditMode(true)} style={s.editBtn}>
               <Text style={s.editBtnText}>Edit</Text>
             </TouchableOpacity>
-          </View>
+          </LinearGradient>
         )}
 
-        {/* Calendar strip */}
         {cycleData && (
           <View style={[s.card, T.shadow.sm]}>
             <Text style={s.cardTitle}>Cycle calendar</Text>
@@ -174,7 +178,6 @@ export default function CycleScreen() {
           </View>
         )}
 
-        {/* Phase overview */}
         {cycleInfo && (
           <View style={[s.card, T.shadow.sm]}>
             <Text style={s.cardTitle}>Cycle phases</Text>
@@ -186,7 +189,6 @@ export default function CycleScreen() {
           </View>
         )}
 
-        {/* Edit form */}
         {editMode && (
           <View style={[s.card, T.shadow.sm]}>
             <Text style={s.cardTitle}>Set up your cycle</Text>
@@ -214,7 +216,6 @@ export default function CycleScreen() {
           </View>
         )}
 
-        {/* Daily journal */}
         {cycleData && (
           <View style={[s.card, T.shadow.sm]}>
             <Text style={s.cardTitle}>Daily log</Text>
@@ -256,22 +257,16 @@ export default function CycleScreen() {
 
 const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: T.bg },
-  content: { padding: 20, paddingBottom: 40 },
+  content: { padding: 20, paddingBottom: 120 },
   title: { fontSize: 28, fontWeight: '800', color: T.dark, marginBottom: 16 },
 
-  phaseHero: { flexDirection: 'row', alignItems: 'center', gap: 12, borderRadius: T.radius.lg, padding: 16, marginBottom: 14 },
+  phaseHero: { flexDirection: 'row', alignItems: 'center', gap: 12, borderRadius: T.radius.lg, padding: 16, marginBottom: 14, borderWidth: 1, borderColor: '#F1E4DA' },
   phaseEmoji: { fontSize: 40 },
   phaseInfo: { flex: 1 },
   phaseName: { fontSize: 18, fontWeight: '700' },
   phaseDay: { fontSize: 13, color: T.mid, marginTop: 2 },
   nextPeriod: { fontSize: 12, color: T.mid, marginTop: 4 },
-  editBtn: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: T.radius.md, borderWidth: 1, borderColor: T.terra },
-  editBtnText: { fontSize: 12, color: T.terra, fontWeight: '600' },
-
-  card: { backgroundColor: T.white, borderRadius: T.radius.lg, padding: 16, marginBottom: 14 },
-  cardTitle: { fontSize: 15, fontWeight: '700', color: T.dark, marginBottom: 12 },
-
-  phasesRow: { flexDirection: 'row', gap: 8 },
+  editBtn: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: T.radius.md, borderWidth: 1, borderColor: T.terra, backgroundColor: 'rgba(255,255,255,0.45)' },
 
   fieldLabel: { fontSize: 12, color: T.mid, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8, marginTop: 4 },
   input: { backgroundColor: T.bg2, borderRadius: T.radius.md, padding: 12, fontSize: 15, color: T.dark, marginBottom: 12, borderWidth: 1, borderColor: T.border },

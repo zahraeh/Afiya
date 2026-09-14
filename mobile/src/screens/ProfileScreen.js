@@ -137,7 +137,6 @@ export default function ProfileScreen() {
       <ScrollView contentContainerStyle={s.content} keyboardShouldPersistTaps="handled">
         <Text style={s.title}>Profile</Text>
 
-        {/* Identity */}
         <Section title="Identity">
           <SettingRow label="First name" last>
             <TextInput
@@ -150,7 +149,6 @@ export default function ProfileScreen() {
           </SettingRow>
         </Section>
 
-        {/* Connections */}
         <Section title="Connections">
           <View style={s.tokenField}>
             <Text style={s.fieldLabel}>Token Oura Ring</Text>
@@ -194,7 +192,6 @@ export default function ProfileScreen() {
           </View>
         </Section>
 
-        {/* Hormonal profile */}
         <Section title="Hormonal profile">
           <View style={s.chipsWrap}>
             {HORMONAL_PROFILES.map((p) => (
@@ -209,7 +206,6 @@ export default function ProfileScreen() {
           </View>
         </Section>
 
-        {/* Goals */}
         <Section title="My goals">
           <View style={s.chipsWrap}>
             {GOALS.map((g) => (
@@ -224,7 +220,6 @@ export default function ProfileScreen() {
           </View>
         </Section>
 
-        {/* Preferences */}
         <Section title="Preferences">
           <SettingRow label="Morning notification" sub="Receive your advice each morning" last>
             <Switch
@@ -236,12 +231,10 @@ export default function ProfileScreen() {
           </SettingRow>
         </Section>
 
-        {/* Save button */}
         <TouchableOpacity style={[s.saveBtn, saved && s.saveBtnDone]} onPress={saveAll}>
           <Text style={s.saveBtnText}>{saved ? '✓ Saved' : 'Save profile'}</Text>
         </TouchableOpacity>
 
-        {/* RGPD */}
         <TouchableOpacity style={s.deleteBtn} onPress={deleteAllData}>
           <Text style={s.deleteText}>Delete all my data</Text>
         </TouchableOpacity>
@@ -254,7 +247,7 @@ export default function ProfileScreen() {
 
 const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: T.bg },
-  content: { padding: 20, paddingBottom: 48 },
+  content: { padding: 20, paddingBottom: 120 },
   title: { fontSize: 28, fontWeight: '800', color: T.dark, marginBottom: 20 },
 
   inlineInput: { flex: 1, fontSize: 14, color: T.dark, textAlign: 'right' },

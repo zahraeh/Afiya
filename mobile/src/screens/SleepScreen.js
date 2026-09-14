@@ -4,6 +4,7 @@ import {
   RefreshControl, TouchableOpacity, Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect } from '@react-navigation/native';
 import { T } from '../constants/theme';
 import { SecureStorage, KEYS } from '../services/storage';
@@ -41,8 +42,8 @@ function SleepBar({ hours, maxHours = 10 }) {
 }
 
 const bar = StyleSheet.create({
-  wrap: { width: 28, height: 80, backgroundColor: T.bg2, borderRadius: 6, overflow: 'hidden', justifyContent: 'flex-end' },
-  fill: { borderRadius: 6 },
+  wrap: { width: 28, height: 80, backgroundColor: T.bg2, borderRadius: 10, overflow: 'hidden', justifyContent: 'flex-end' },
+  fill: { borderRadius: 10 },
 });
 
 function ReadinessRing({ score }) {
@@ -50,7 +51,7 @@ function ReadinessRing({ score }) {
   const label = score >= 70 ? 'Optimal' : score >= 50 ? 'Fair' : 'Rest recommended';
   return (
     <View style={ring.wrap}>
-      <View style={[ring.circle, { borderColor: color }]}>
+      <View style={[ring.circle, { borderColor: color }]}> 
         <Text style={[ring.score, { color }]}>{score}</Text>
         <Text style={ring.max}>/100</Text>
       </View>
@@ -61,7 +62,7 @@ function ReadinessRing({ score }) {
 
 const ring = StyleSheet.create({
   wrap: { alignItems: 'center' },
-  circle: { width: 100, height: 100, borderRadius: 50, borderWidth: 6, alignItems: 'center', justifyContent: 'center' },
+  circle: { width: 104, height: 104, borderRadius: 52, borderWidth: 6, alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFFDFB' },
   score: { fontSize: 28, fontWeight: '800' },
   max: { fontSize: 11, color: T.mid },
   label: { marginTop: 8, fontSize: 13, fontWeight: '600' },
@@ -158,8 +159,12 @@ export default function SleepScreen() {
         <Text style={s.title}>Sleep</Text>
         <Text style={s.sub}>Last night · {sleep.last_night}</Text>
 
-        {/* Readiness + main stat */}
-        <View style={s.heroRow}>
+        <LinearGradient
+          colors={['#F2F7F2', '#FFFDFB']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[s.heroRow, T.shadow.sm]}
+        >
           <ReadinessRing score={sleep.readiness_score} />
           <View style={s.heroStats}>
             <View style={s.heroStat}>
@@ -171,9 +176,8 @@ export default function SleepScreen() {
               <Text style={s.heroLabel}>Efficiency</Text>
             </View>
           </View>
-        </View>
+        </LinearGradient>
 
-        {/* 7-day history chart */}
         {sleepHistory.length > 0 && (
           <View style={[s.card, T.shadow.sm]}>
             <Text style={s.cardTitle}>Last 7 nights</Text>
@@ -194,7 +198,6 @@ export default function SleepScreen() {
           </View>
         )}
 
-        {/* Detailed metrics */}
         <View style={[s.card, T.shadow.sm]}>
           <Text style={s.cardTitle}>Night details</Text>
           <MetricRow icon="🌊" label="Deep sleep" sub="Physical recovery" value={`${deepH}h`} />
@@ -215,7 +218,6 @@ export default function SleepScreen() {
           )}
         </View>
 
-        {/* Readiness contributors */}
         {Object.keys(sleep.readiness_contributors).length > 0 && (
           <View style={[s.card, T.shadow.sm]}>
             <Text style={s.cardTitle}>Recovery factors</Text>
@@ -236,7 +238,6 @@ export default function SleepScreen() {
           </View>
         )}
 
-        {/* Stress */}
         {stress && (
           <View style={[s.card, T.shadow.sm]}>
             <Text style={s.cardTitle}>Stress & recovery</Text>
@@ -265,7 +266,6 @@ export default function SleepScreen() {
           </View>
         )}
 
-        {/* Workouts */}
         {workouts?.length > 0 && (
           <View style={[s.card, T.shadow.sm]}>
             <Text style={s.cardTitle}>Recent activity</Text>
@@ -291,7 +291,7 @@ export default function SleepScreen() {
 
 const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: T.bg },
-  content: { padding: 20, paddingBottom: 40 },
+  content: { padding: 20, paddingBottom: 120 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 32, backgroundColor: T.bg },
   errorEmoji: { fontSize: 48, marginBottom: 16 },
   errorTitle: { fontSize: 18, fontWeight: '600', color: T.dark, marginBottom: 8 },
@@ -302,16 +302,10 @@ const s = StyleSheet.create({
   title: { fontSize: 28, fontWeight: '800', color: T.dark, marginBottom: 4 },
   sub: { fontSize: 13, color: T.mid, marginBottom: 20 },
 
-  heroRow: { flexDirection: 'row', alignItems: 'center', gap: 24, marginBottom: 20 },
+  heroRow: { flexDirection: 'row', alignItems: 'center', gap: 24, marginBottom: 20, padding: 18, borderRadius: T.radius.lg },
   heroStats: { flex: 1, gap: 12 },
-  heroStat: {},
-  heroValue: { fontSize: 28, fontWeight: '800', color: T.dark },
-  heroLabel: { fontSize: 12, color: T.mid, marginTop: 2 },
-
-  card: { backgroundColor: T.white, borderRadius: T.radius.lg, padding: 16, marginBottom: 14 },
-  cardTitle: { fontSize: 15, fontWeight: '700', color: T.dark, marginBottom: 14 },
-
-  chartRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 8 },
+  heroStat: { backgroundColor: T.white, padding: 12, borderRadius: T.radius.md, borderWidth: 1, borderColor: T.border },
+  heroValue: { fontSize: 26, fontWeight: '800', color: T.dark },
   chartCol: { alignItems: 'center', gap: 4 },
   chartVal: { fontSize: 10, color: T.mid },
   chartDay: { fontSize: 10, color: T.mid },
